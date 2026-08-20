@@ -45,7 +45,7 @@ fun ReviewScreen(
     onRescan: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val frames = viewModel.frames
+    val frames = state.framePaths.map { File(it) }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(

@@ -61,9 +61,13 @@ fun ScanScreen(
 
         LaunchedEffect(Unit) {
             val previewView = previewViewRef.value ?: return@LaunchedEffect
-            val rotation = view.display?.rotation ?: Surface.ROTATION_0
-            camera.bind(lifecycleOwner, previewView, rotation)
-            viewModel.startScan(camera)
+            try {
+                val rotation = view.display?.rotation ?: Surface.ROTATION_0
+                camera.bind(lifecycleOwner, previewView, rotation)
+                viewModel.startScan(camera)
+            } catch (e: Exception) {
+                viewModel.reportError("相机初始化失败: ${e.message ?: e.javaClass.simpleName}")
+            }
         }
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -97,6 +101,20 @@ fun ScanScreen(
                 StatusBadge("拍照", state.lastCameraError == null)
             }
             Spacer(Modifier.weight(1f))
+            if (state.error != null) {
+                Surface(
+                    color = Color(0xFFC62828),
+                    shape = MaterialTheme.shapes.medium,
+                ) {
+                    Text(
+                        state.error,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+            }
             CaptureHint(rotationDeg = state.rotationSinceCaptureDeg)
             Spacer(Modifier.height(8.dp))
             Button(

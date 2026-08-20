@@ -12,7 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.FileProvider
@@ -68,7 +68,7 @@ private fun Word3App(
     camera: CameraController,
     onShare: (File) -> Unit,
 ) {
-    var step by remember { mutableStateOf(Step.Permissions) }
+    var step by rememberSaveable { mutableStateOf(Step.Permissions) }
 
     when (step) {
         Step.Permissions -> PermissionScreen(onNext = { step = Step.Prepare })

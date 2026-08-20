@@ -40,6 +40,7 @@ data class ScanUiState(
     val error: String? = null,
     val packedFile: File? = null,
     val lastCameraError: String? = null,
+    val framePaths: List<String> = emptyList(),
 )
 
 class ScanViewModel(app: Application) : AndroidViewModel(app) {
@@ -61,6 +62,9 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
 
     fun startScan(camera: CameraController) {
         if (_state.value.isScanning) return
+        // 清理上一个会话可能残留的传感器监听（未打包直接"重新扫描"的情况）
+        sensorRecorder.stop()
+        locationTracker.stop()
         val now = System.currentTimeMillis()
         val dir = File(getApplication<Application>().filesDir, "sessions/$now").apply { mkdirs() }
         sessionDir = dir
@@ -74,6 +78,7 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
             isScanning = true,
             error = null,
             packedFile = null,
+            framePaths = emptyList(),
             gyroAvailable = sensorRecorder.gyroAvailable,
             gpsAvailable = locationTracker.isAvailable,
         )
@@ -92,6 +97,7 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
                     index += 1
                     _state.value = _state.value.copy(
                         frameCount = index,
+                        framePaths = frameFiles.map { it.absolutePath },
                         rotationSinceCaptureDeg = sensorRecorder.rotationSinceCaptureDeg,
                         lastCameraError = null,
                     )
@@ -111,6 +117,10 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
         File(dir, "metadata.jsonl").appendText(line + "\n")
     }
 
+    fun reportError(message: String) {
+        _state.value = _state.value.copy(error = message)
+    }
+
     fun stopScan() {
         captureJob?.cancel()
         captureJob = null
@@ -121,7 +131,10 @@ class ScanViewModel(app: Application) : AndroidViewModel(app) {
         if (index in frameFiles.indices) {
             frameFiles[index].delete()
             frameFiles.removeAt(index)
-            _state.value = _state.value.copy(frameCount = frameFiles.size)
+            _state.value = _state.value.copy(
+                frameCount = frameFiles.size,
+                framePaths = frameFiles.map { it.absolutePath },
+            )
         }
     }
 
