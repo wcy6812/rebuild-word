@@ -16,3 +16,4 @@ markers = [
     "cuda: requires CUDA GPU (skipped in CI)",
 ]
 testpaths = ["tests"]
+pythonpath = ["."]
