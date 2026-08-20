@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "word3-desktop"
+version = "0.1.0"
+description = "Word3 desktop reconstruction pipeline: .3word -> SfM -> 3DGS"
+requires-python = ">=3.10"
+
+[tool.setuptools]
+packages = ["pipeline", "pipeline.word3"]
+
+[tool.pytest.ini_options]
+markers = [
+    "cuda: requires CUDA GPU (skipped in CI)",
+]
+testpaths = ["tests"]

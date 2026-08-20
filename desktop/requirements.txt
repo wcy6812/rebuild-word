@@ -1,0 +1,10 @@
+# 桌面重建端依赖（Windows/Linux + NVIDIA CUDA GPU）
+# 安装: pip install -r requirements.txt
+# 注意: torch 需 CUDA 版，先按 README 指引安装
+torch>=2.3
+gsplat>=1.0
+pycolmap>=3.10
+numpy>=1.26
+pillow>=10.0
+gradio>=4.44
+plotly>=5.20

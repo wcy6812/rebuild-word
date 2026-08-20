@@ -1,0 +1,23 @@
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.apk
+*.aab
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+desktop/**/output/
+desktop/**/images*/
+desktop/**/sfm/
+
+# General
+.DS_Store
+*.3word

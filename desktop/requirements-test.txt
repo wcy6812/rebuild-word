@@ -1,0 +1,4 @@
+# CI 单元测试依赖（无需 CUDA/GPU）
+numpy>=1.26
+pillow>=10.0
+pytest>=8.0
