@@ -46,7 +46,7 @@ data class CameraIntrinsics(
                     fy = raw[1] * sy,
                     cx = raw[2] * sx,
                     cy = raw[3] * sy,
-                    distortion = if (distortionRaw.isNullOrEmpty()) null else distortionRaw,
+                    distortion = if (distortionRaw.isNullOrEmpty()) null else distortionRaw.map { it.toDouble() },
                     distortionModel = if (distortionRaw.isNullOrEmpty()) "NONE" else "OPENCV",
                     sensorOrientationDegrees = orientation,
                 )
