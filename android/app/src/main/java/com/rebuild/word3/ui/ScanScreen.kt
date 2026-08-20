@@ -22,6 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +46,7 @@ fun ScanScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
     val view = LocalView.current
+    val previewViewRef = remember { mutableStateOf<PreviewView?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -52,12 +56,14 @@ fun ScanScreen(
                 }
             },
             modifier = Modifier.fillMaxSize(),
-        ) { previewView ->
-            LaunchedEffect(Unit) {
-                val rotation = view.display?.rotation ?: Surface.ROTATION_0
-                camera.bind(lifecycleOwner, previewView, rotation)
-                viewModel.startScan(camera)
-            }
+            update = { previewViewRef.value = it },
+        )
+
+        LaunchedEffect(Unit) {
+            val previewView = previewViewRef.value ?: return@LaunchedEffect
+            val rotation = view.display?.rotation ?: Surface.ROTATION_0
+            camera.bind(lifecycleOwner, previewView, rotation)
+            viewModel.startScan(camera)
         }
 
         Column(modifier = Modifier.fillMaxSize()) {

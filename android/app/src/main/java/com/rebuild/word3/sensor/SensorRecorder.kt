@@ -5,6 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.SystemClock
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -47,7 +48,7 @@ class SensorRecorder(private val context: Context) {
             File(sensorsDir, "gyro.csv"),
             "utc_ms,wx,wy,wz",
             { e, utc -> "${utc},${e.values[0]},${e.values[1]},${e.values[2]}" },
-            gyroAvailable = { gyroAvailable = true },
+            { gyroAvailable = true },
         ) { e, utc ->
             if (lastGyroTimestampNs != 0L) {
                 val dt = (e.timestamp - lastGyroTimestampNs) / 1e9f
@@ -61,14 +62,14 @@ class SensorRecorder(private val context: Context) {
             File(sensorsDir, "accel.csv"),
             "utc_ms,ax,ay,az",
             { e, utc -> "${utc},${e.values[0]},${e.values[1]},${e.values[2]}" },
-            accelAvailable = { accelAvailable = true },
+            { accelAvailable = true },
         )
         register(
             Sensor.TYPE_MAGNETIC_FIELD,
             File(sensorsDir, "magnetometer.csv"),
             "utc_ms,mx,my,mz",
             { e, utc -> "${utc},${e.values[0]},${e.values[1]},${e.values[2]}" },
-            magAvailable = { magAvailable = true },
+            { magAvailable = true },
         )
     }
 
@@ -102,8 +103,8 @@ class SensorRecorder(private val context: Context) {
     }
 
     private fun eventUtcMs(timestampNs: Long): Long {
-        val timeBaseNs = SensorManager.getTimeBase()
-        return (timestampNs - timeBaseNs) / 1_000_000L + System.currentTimeMillis()
+        // sensor timestamps share the CLOCK_MONOTONIC base used by elapsedRealtimeNanos
+        return System.currentTimeMillis() + (timestampNs - SystemClock.elapsedRealtimeNanos()) / 1_000_000L
     }
 
     fun stop() {
