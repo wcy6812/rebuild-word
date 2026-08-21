@@ -101,13 +101,14 @@ fun ScanScreen(
                 StatusBadge("拍照", state.lastCameraError == null)
             }
             Spacer(Modifier.weight(1f))
-            if (state.error != null) {
+            val scanError = state.error
+            if (scanError != null) {
                 Surface(
                     color = Color(0xFFC62828),
                     shape = MaterialTheme.shapes.medium,
                 ) {
                     Text(
-                        state.error,
+                        scanError,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         color = Color.White,
                         style = MaterialTheme.typography.bodyMedium,
